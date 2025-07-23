@@ -27,25 +27,32 @@ The following rules and constraints make a brute-force strategy both feasible an
 
 All evaluation is performed during the **tile placement phase**, and the resulting information is passed to the **meeple placement phase** through the `bot_state` class. In the river stage, the bot aims to create alternating turns and only place meeples on city and monastery.
 
-### Placement Evaluation
+## Placement Evaluation
 
-Each valid tile placement is scored by the `placement_value_estimator`, which considers:
+For each valid tile placement, the bot uses `placement_value_estimator` to assign a score, factoring in:
 
-- **Connected Structure Analysis**  
-  Detects and analyzes cities, roads, monasteries, etc., measuring:
-  - Structure size  
-  - Ownership
-  - Number of open edges
+#### Connected Structure Analysis
 
-- **Completion Probability**  
-  Uses combinatorics and remaining tile counts to estimate the chance of completing open features.
+The bot traverses all features (cities, roads, monasteries, etc.) connected to the placement, gathering:
 
-- **Scoring Components**:
-  - **Potential Points**: Assumes this could be the final round and maximizes the score accordingly.
-  - **Completion Likelihood**: Completion probabilities are added as weights to prioritize easier-to-complete structures.
-  - **Meeple Cost**: A linear penalty is applied based on remaining meeples.
-  - **Monastery Consideration**: Tracks how many monasteries are on the board and who owns them. Prioritizes placements that support my monasteries and avoid helping enemy ones.
-  - **Meeple Placement Condition**: Meeples are only placed if the expected return of that placement exceeds the meeple cost.
+- The total size of the structure (including emblem bonuses for cities)  
+- Which players have meeples on the structure  
+- The number and coordinates of open edges (unfinished parts)
+
+#### Completion Probability
+
+For each open edge, the bot estimates the probability of completion by:
+
+- Counting how many remaining tiles (in the deck and in hand) could fit and complete the structure at that spot  
+- Using combinatorics to estimate the chance of drawing all needed tiles within the remaining rounds
+
+#### Scoring Components:
+
+- **Potential Points**: Calculates the score for completing the structure, including bonuses (like emblems for cities), and assumes the best-case scenario for the current round.  
+- **Completion Likelihood**: Weights the score by the probability of completion, so easier-to-complete structures are prioritized.  
+- **Meeple Cost**: Applies a penalty for using a meeple, which increases as the number of available meeples decreases (and is adjusted in endgame mode).  
+- **Monastery Support**: Considers how many tiles surround monasteries (both mine and opponents’), and scores placements that help my monasteries or hinder opponents.  
+- **Meeple Placement Decision**: Only recommends placing a meeple if the expected value (potential points × completion probability − meeple cost) is positive.
 
 ### Selection
 
@@ -61,7 +68,7 @@ Probabilities are calculated using combinatorics to estimate:
 
 ## Endgame Strategy
 
-In later stages of the game, an **"endgame mode"** is activated:
+In later stages of the game, an **"endgame mode"** is activated based on the highest scorer or remaining rounds:
 - Reduces the weight of meeple cost and encourages using remaining meeples before the game ends
 
 ---
