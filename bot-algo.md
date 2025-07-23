@@ -54,7 +54,7 @@ The move with the **highest weighted score** is selected, and the `bot_state` is
 ### Combinatorics Use
 
 Probabilities are calculated using combinatorics to estimate:
-- The chance of drawing all required tiles to complete a structure based on the available tiles and remaining rounds of the game
+- The chance of drawing all required tiles to complete a structure based on the available tiles and remaining rounds of the game. This means finding the probability of completing each edges and then using combinatorics to estimate the total probability of being able to complete all edges.
 - This will help the bot in prioritising placing tiles near structures that are easier to complete
 
 ---
