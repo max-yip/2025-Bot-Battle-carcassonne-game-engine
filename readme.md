@@ -26,3 +26,7 @@ To get started you will have to:
 2. Create the environment `python -m venv .venv`
 3. Activate the environment
 4. Install requirements `pip install -e .`
+
+
+### Note:
+Awarded with Best Algorithm and came 2nd place 🤭
